@@ -1,0 +1,16 @@
+
+FROM haskell:9.2.8
+
+WORKDIR /server
+
+# RUN apt-get update && \
+#     apt-get install -y build-essential zlib1g-dev libmysqlclient-dev libpq-dev
+RUN curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | BOOTSTRAP_HASKELL_NONINTERACTIVE=1 BOOTSTRAP_HASKELL_GHC_VERSION=9.2.8 BOOTSTRAP_HASKELL_CABAL_VERSION=latest BOOTSTRAP_HASKELL_INSTALL_STACK=1 BOOTSTRAP_HASKELL_INSTALL_HLS=1 BOOTSTRAP_HASKELL_ADJUST_BASHRC=P sh \
+    && echo 'export PATH="$PATH:/root/.ghcup/bin"' >> /root/.bashrc
+RUN stack install yesod-bin --install-ghc
+RUN useradd goodboy
+
+RUN chmod -R 777 /server
+RUN chown -R goodboy /server
+# CMD ["stack", "exec", "--", "yesod", "devel"]
+CMD ["tail", "-f", "/dev/null"]

@@ -1,0 +1,49 @@
+
+version: "3.8"
+name: logsview
+
+services:
+  
+  web:
+    build: 
+      dockerfile: ./docker-images/logs/Dockerfile.Debug
+    working_dir: /logs
+    ports:
+      - 5173:5173
+    volumes:
+      - ./web:/logs:rw
+    networks:
+      - logs
+  
+  server:
+    build: 
+      context: ./server
+      dockerfile: ../docker-images/server/Dockerfile.Debug
+    volumes:
+      - ./server:/server:rw
+    expose:
+      - 8000
+    networks:
+      - logs
+
+
+  db:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_DB: default
+      POSTGRES_USER: Something
+      POSTGRES_PASSWORD: baboobaySomethingLoool
+    volumes:
+      - storage:/var/lib/postgresql/data
+    networks:
+      - logs
+
+
+volumes:
+  storage: {}
+
+networks:
+  logs:
+    driver: bridge
+    ipam:
+      driver: default
