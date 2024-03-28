@@ -1,0 +1,37 @@
+syntax = "proto3";
+package api;
+
+message Log {
+	message MessageBody {
+
+		message AdditionalData {
+
+			repeated int32 flags = 1;
+
+			string message = 2;
+
+		}
+
+		string title = 1;
+		string message = 2;
+		AdditionalData additionalData = 3;
+	}
+	//0 - DEBUG, 1 - INFO, 2 - WARN, 3 - ERROR, 4 - CRITICAL
+	int32 level = 1;
+	string serviceName = 2;
+	string controllerName = 3;
+	MessageBody message = 4;
+}
+
+message LogRequest {
+	Log log = 1;
+}
+
+message LogResponse {
+	int32 result = 1;
+	string error = 2;
+}
+
+service LogsService {
+	rpc InsertLog(LogRequest) returns (LogResponse);
+}

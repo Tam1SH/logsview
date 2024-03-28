@@ -1,0 +1,7 @@
+FROM nginx:1.25.4-alpine3.18-slim
+
+COPY ./server.Debug.conf etc/nginx/conf.d/server.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+

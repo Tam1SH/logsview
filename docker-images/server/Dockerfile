@@ -1,43 +1,34 @@
-FROM fpco/stack-build:lts-16.0 as dependencies
-RUN mkdir /opt/build
-WORKDIR /opt/build
+FROM rust:1.75 as planner
 
-# GHC dynamically links its compilation targets to lib gmp
+WORKDIR /app
+RUN cargo install cargo-chef
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM rust:1.75 as cacher
+WORKDIR /app
+RUN cargo install cargo-chef
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+
+
+FROM rust:1.75 as builder
+
+ENV PKG_CONFIG_ALLOW_CROSS=1
+
 RUN apt-get update \
-  && apt-get download libgmp10
-RUN mv libgmp*.deb libgmp.deb
+ && DEBIAN_FRONTEND=noninteractive \
+    apt-get install --no-install-recommends --assume-yes \
+      protobuf-compiler
+	  
+WORKDIR /app
 
-# Docker build should not use cached layer if any of these is modified
-COPY stack.yaml package.yaml /opt/build/
-RUN stack build --system-ghc --dependencies-only
+COPY . .
 
-# ------------------------------------------------------------------------
-FROM fpco/stack-build:lts-16.0 as build
+COPY --from=cacher /app/target target
+COPY --from=cacher /usr/local/cargo /usr/local/cargo
+RUN cargo build --release
 
-# Copy compiled dependencies from previous stage
-COPY --from=dependencies /root/.stack /root/.stack
-COPY . /opt/build/
-
-WORKDIR /opt/build
-
-RUN stack build --system-ghc
-
-RUN mv "$(stack path --local-install-root --system-ghc)/bin" /opt/build/bin
-
-# -----------------------------------------------------------------------
-# Base image for stack build so compiled artifact from previous
-# stage should run
-FROM ubuntu:18.04 as app
-RUN mkdir -p /opt/app
-WORKDIR /opt/app
-
-# Install lib gmp
-COPY --from=dependencies /opt/build/libgmp.deb /tmp
-RUN dpkg -i /tmp/libgmp.deb && rm /tmp/libgmp.deb
-
-COPY --from=build /opt/build/bin .
-COPY --from=build /opt/build/static ./static
-COPY --from=build /opt/build/config ./config
-ENV YESOD_PORT 8080
-EXPOSE 8080
-CMD ["/opt/app/my-project"]
+FROM gcr.io/distroless/cc-debian12
+COPY --from=builder /app/target/release/server /
+CMD  ["./server"]

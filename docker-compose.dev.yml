@@ -4,6 +4,12 @@ name: logsview
 
 services:
   
+  proxy:
+    build:
+      dockerfile: ./docker-images/proxy/Dockerfile.Debug
+    ports:
+      - 80:80
+    
   web:
     build: 
       dockerfile: ./docker-images/logs/Dockerfile.Debug
@@ -31,7 +37,7 @@ services:
     image: timescale/timescaledb:latest-pg16
     environment:
       POSTGRES_DB: default
-      POSTGRES_USER: Something
+      POSTGRES_USER: someone
       POSTGRES_PASSWORD: baboobaySomethingLoool
     volumes:
       - storage:/var/lib/postgresql/data
