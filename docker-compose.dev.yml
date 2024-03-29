@@ -6,16 +6,19 @@ services:
   
   proxy:
     build:
-      dockerfile: ./docker-images/proxy/Dockerfile.Debug
-    ports:
-      - 80:80
-    
+      context: ./docker-images/proxy
+      dockerfile: Dockerfile.Debug
+    expose:
+      - 80
+    networks:
+      - logs
+
   web:
     build: 
       dockerfile: ./docker-images/logs/Dockerfile.Debug
     working_dir: /logs
-    ports:
-      - 5173:5173
+    expose:
+      - 5173
     volumes:
       - ./web:/logs:rw
     networks:
@@ -28,7 +31,8 @@ services:
     volumes:
       - ./server:/server:rw
     expose:
-      - 8000
+      - 80
+      - 2331
     networks:
       - logs
 
@@ -43,7 +47,8 @@ services:
       - storage:/var/lib/postgresql/data
     networks:
       - logs
-
+    expose:
+      - 5432
 
 volumes:
   storage: {}

@@ -2,25 +2,17 @@ syntax = "proto3";
 package api;
 
 message Log {
-	message MessageBody {
-
-		message AdditionalData {
-
-			repeated int32 flags = 1;
-
-			string message = 2;
-
-		}
-
-		string title = 1;
-		string message = 2;
-		AdditionalData additionalData = 3;
-	}
 	//0 - DEBUG, 1 - INFO, 2 - WARN, 3 - ERROR, 4 - CRITICAL
 	int32 level = 1;
-	string serviceName = 2;
-	string controllerName = 3;
-	MessageBody message = 4;
+	string title = 2;
+	string serviceName = 3;
+	string controllerName = 4;
+	//Must be uuid;
+	string request_id = 5;
+	//Must be a valid json
+	string message = 6;
+	//Must be a valid json
+	string additional_data = 7;
 }
 
 message LogRequest {

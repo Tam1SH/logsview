@@ -1,11 +1,8 @@
 use actix_web::{http::StatusCode, HttpResponse};
-use anyhow::Error as AnyError;
-use derive_more::{Deref, Display};
 use serde::Serialize;
 use std::fmt;
 
-#[derive(Debug, Deref, Display)]
-pub struct Error(pub AnyError);
+
 
 #[derive(Serialize, Debug)]
 pub struct ApiError {
@@ -30,17 +27,12 @@ impl actix_web::error::ResponseError for ApiError {
     }
 }
 
-impl From<Error> for ApiError {
-    fn from(value: Error) -> Self {
-        Self {
+impl From<anyhow::Error> for ApiError {
+	fn from(value: anyhow::Error) -> Self {
+		Self {
             http_code: StatusCode::INTERNAL_SERVER_ERROR,
             message: value.to_string(),
         }
-    }
+	}
 }
 
-impl actix_web::error::ResponseError for Error {
-    fn error_response(&self) -> HttpResponse {
-        HttpResponse::InternalServerError().body((*self).to_string())
-    }
-}

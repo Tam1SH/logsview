@@ -1737,6 +1737,8 @@ dependencies = [
  "diesel-derive-enum",
  "dotenv",
  "dotenv_codegen",
+ "prost",
+ "prost-types",
  "serde",
  "serde_json",
  "tokio",

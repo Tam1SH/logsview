@@ -7,10 +7,7 @@ use actix_web::{
 use uuid::Uuid;
 
 use crate::{
-    api::http::{
-        api_error::{ApiError, Error},
-        server::AppState,
-    },
+    api::{http::api_error::ApiError, state::AppState},
     data_layer::model::dto::log::LogDto,
     domain::logger::{LoggerService, LoggerServiceProvider},
 };
@@ -29,8 +26,7 @@ use crate::{
 async fn insert_log(state: Data<AppState>, model: Json<LogDto>) -> Result<HttpResponse, ApiError> {
     let service = LoggerService::new(&state.pool, Uuid::new_v4());
 
-    match service.insert_log(model.into_inner()).await {
-        Ok(_) => Ok(HttpResponse::Ok().finish()),
-        Err(err) => Err(Error(err).into()),
-    }
+	service.insert_log(model.into_inner()).await?;
+
+    Ok(HttpResponse::Ok().finish())
 }

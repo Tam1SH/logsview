@@ -6,10 +6,13 @@ pub mod domain;
 pub mod schema;
 use tokio::join;
 
-use api::http::server::config_actix_server;
+use api::{grpc::server::config_grpc_server, http::server::config_actix_server};
 
 #[actix::main]
 async fn main() -> std::io::Result<()> {
+	
+    let grpc = async { config_grpc_server().await };
+	
     let http = async {
         config_actix_server()
             .await
@@ -17,7 +20,7 @@ async fn main() -> std::io::Result<()> {
             .await
     };
 
-    let _ = join!(http);
+    let _ = join!(http, grpc);
 
     Ok(())
 }
