@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 actix = "0.13.3"
 actix-web = "4.4.0"
+actix-web-actors = "4.3.0"
 diesel = { version = "2.1.0", features = ["chrono", "serde_json", "uuid"] }
 diesel-async = { version = "0.4.1", features = ["postgres", "deadpool"] }
 diesel-derive-enum = { version = "2.1.0", features = ["postgres"] }
@@ -23,10 +24,12 @@ serde = { version = "1.0.188", features = ["derive"] }
 tonic = "0.11.0"
 prost = "0.12.1" 
 prost-types = "0.12.1"
-utoipa = { version = "4.0.0", features = ["actix_extras", "yaml"] }
+utoipa = { version = "4.0.0", features = ["actix_extras", "yaml", "uuid"] }
 tokio = { version = "1.32.0", features = ["full"] }
 tokio-test = "0.4.3"
 derive_more = "0.99.17"
-
+futures = "0.3"
+sqlx = { version = "0.7.4", features = [ "runtime-tokio-rustls" , "postgres"] }
+futures-util = "0.3"
 [build-dependencies]
 tonic-build = "0.10.2"

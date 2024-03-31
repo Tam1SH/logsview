@@ -1,10 +1,11 @@
 use anyhow::Result;
 use chrono::Utc;
-use diesel::insert_into;
-use diesel_async::pooled_connection::deadpool::Pool;
-use diesel_async::{AsyncPgConnection, RunQueryDsl};
+use diesel::{insert_into, QueryDsl};
+use diesel_async::RunQueryDsl;
+use sqlx::postgres::PgListener;
 use uuid::Uuid;
 
+use crate::data_layer::database_connection::pool::Pools;
 use crate::{
     data_layer::model::{dto::log::LogDto, log::Log},
     schema::logs::dsl::logs,
@@ -13,22 +14,45 @@ use crate::{
 #[allow(async_fn_in_trait)]
 pub trait LoggerServiceProvider {
     async fn insert_log(&self, log: LogDto) -> Result<()>;
+
+	async fn get_logs_count(&self) -> Result<usize>;
+
+    async fn get_logs_stream() -> Result<PgListener>;
 }
 
 pub struct LoggerService<'a> {
-    conn: &'a Pool<AsyncPgConnection>,
+    pools: &'a Pools,
     request_id: Uuid,
 }
 
 impl<'a> LoggerService<'a> {
-    pub fn new(conn: &'a Pool<AsyncPgConnection>, request_id: Uuid) -> Self {
-        Self { conn, request_id }
+    pub fn new(pools: &'a Pools, request_id: Uuid) -> Self {
+        Self { pools, request_id }
     }
 }
 
+
+
 impl LoggerServiceProvider for LoggerService<'_> {
+
+	async fn get_logs_count(&self) -> Result<usize> {
+		
+        let conn = &mut self.pools.diesel.get().await?;
+
+		let count = logs.count().execute(conn).await?;
+
+		Ok(count)
+
+	}
+
+    async fn get_logs_stream() -> Result<PgListener> {
+        let mut listener = PgListener::connect(dotenv!("DATABASE_URL")).await?;
+        listener.listen_all(["logs"]).await?;
+        Ok(listener)
+    }
+
     async fn insert_log(&self, log: LogDto) -> Result<()> {
-        let conn = &mut self.conn.get().await?;
+        let conn = &mut self.pools.diesel.get().await?;
 
         let LogDto {
             additional_data,

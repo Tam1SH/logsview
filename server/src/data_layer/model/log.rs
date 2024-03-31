@@ -2,9 +2,10 @@ use chrono::{DateTime, Utc};
 use diesel::{deserialize::Queryable, prelude::Insertable, query_builder::AsChangeset, Selectable};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize, diesel_derive_enum::DbEnum)]
+#[derive(Debug, Serialize, Deserialize, diesel_derive_enum::DbEnum, ToSchema)]
 #[ExistingTypePath = "crate::schema::sql_types::Loglevel"]
 pub enum Loglevel {
     DEBUG,

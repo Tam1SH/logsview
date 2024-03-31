@@ -11,5 +11,5 @@ RUN cargo install cargo-expand
 RUN rustup component add clippy
 RUN rustup component add rustfmt
 WORKDIR /server
-# ENTRYPOINT cargo-watch -x run
-ENTRYPOINT cargo run || tail -f /dev/null
+ENTRYPOINT cargo-watch -x run
+# ENTRYPOINT cargo run || tail -f /dev/null

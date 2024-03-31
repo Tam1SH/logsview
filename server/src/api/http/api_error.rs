@@ -1,10 +1,9 @@
 use actix_web::{http::StatusCode, HttpResponse};
 use serde::Serialize;
+use utoipa::ToSchema;
 use std::fmt;
 
-
-
-#[derive(Serialize, Debug)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct ApiError {
     pub message: String,
     #[serde(skip)]
@@ -28,11 +27,10 @@ impl actix_web::error::ResponseError for ApiError {
 }
 
 impl From<anyhow::Error> for ApiError {
-	fn from(value: anyhow::Error) -> Self {
-		Self {
+    fn from(value: anyhow::Error) -> Self {
+        Self {
             http_code: StatusCode::INTERNAL_SERVER_ERROR,
             message: value.to_string(),
         }
-	}
+    }
 }
-

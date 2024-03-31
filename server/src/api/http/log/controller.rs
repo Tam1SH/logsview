@@ -1,7 +1,5 @@
 use actix_web::{
-    post,
-    web::{Data, Json},
-    HttpResponse,
+    get, post, web::{Data, Json}, HttpResponse
 };
 
 use uuid::Uuid;
@@ -11,6 +9,8 @@ use crate::{
     data_layer::model::dto::log::LogDto,
     domain::logger::{LoggerService, LoggerServiceProvider},
 };
+
+use super::response_types::GetLogsCountResponse;
 
 #[utoipa::path(
 	context_path = "/api",
@@ -24,9 +24,29 @@ use crate::{
 )]
 #[post("/insertLog")]
 async fn insert_log(state: Data<AppState>, model: Json<LogDto>) -> Result<HttpResponse, ApiError> {
-    let service = LoggerService::new(&state.pool, Uuid::new_v4());
+    let service = LoggerService::new(&state.pools, Uuid::new_v4());
 
-	service.insert_log(model.into_inner()).await?;
+    service.insert_log(model.into_inner()).await?;
 
     Ok(HttpResponse::Ok().finish())
+}
+
+#[utoipa::path(
+	context_path = "/api",
+	tag = "Logs",
+	responses(
+		(status = 200, body = usize),
+		(status = 400, body = ApiError),
+		(status = 500, body = ApiError)
+	)
+)]
+#[get("/getLogsCount")]
+async fn get_logs_count(state: Data<AppState>) -> Result<Json<GetLogsCountResponse>, ApiError> {
+    let service = LoggerService::new(&state.pools, Uuid::new_v4());
+
+    let count = service.get_logs_count().await?;
+
+    Ok(Json(
+		GetLogsCountResponse { count }
+	))
 }

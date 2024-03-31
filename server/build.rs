@@ -1,7 +1,6 @@
 use std::fs;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-	
     let paths = fs::read_dir("./src/api/grpc/schema")?;
 
     for path in paths {

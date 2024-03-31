@@ -1,0 +1,10 @@
+.openapi-generator-ignore
+apis/LogsApi.ts
+apis/index.ts
+index.ts
+models/ApiError.ts
+models/GetLogsCountResponse.ts
+models/LogDto.ts
+models/Loglevel.ts
+models/index.ts
+runtime.ts

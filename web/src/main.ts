@@ -1,23 +1,16 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+
 import './assets/base.css'
 import './assets/main.scss'
-
-import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-
-const vuetify = createVuetify({
-	components,
-	directives,
-	theme: {
-		defaultTheme: 'dark'
-	},
-})
+import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import { VueQueryPlugin } from "vue-query"
+import ElementPlus from 'element-plus'
   
 createApp(App)
 	.use(router)
-	.use(vuetify)
+	.use(VueQueryPlugin)
+	.use(ElementPlus)
 	.mount('#app')

@@ -6,23 +6,21 @@ use crate::{api::state::AppState, data_layer::database_connection::pool::setup_p
 
 use super::logs::{g::logs_service_server::LogsServiceServer, server::GRpcLoggerService};
 
-
 pub trait AppStateImpl {
     fn app_state(&self) -> &AppState;
 }
 
 impl<T> AppStateImpl for Request<T> {
-	
     fn app_state(&self) -> &AppState {
         self.extensions().get::<Arc<AppState>>().unwrap()
     }
 }
 
 pub async fn config_grpc_server() -> Result<(), tonic::transport::Error> {
-    let pool = setup_pool().await;
+    let pools = setup_pool().await;
 
     let state = AppState {
-        pool
+        pools: pools.clone(),
     };
 
     let state = Arc::new(state);

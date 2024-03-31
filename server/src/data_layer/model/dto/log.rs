@@ -1,10 +1,11 @@
 use serde::Deserialize;
 use serde_json::Value;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 use crate::data_layer::model::log::Loglevel;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, ToSchema)]
 pub struct LogDto {
     pub level: Loglevel,
     pub request_id: Option<Uuid>,

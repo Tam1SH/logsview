@@ -1,5 +1,5 @@
-use diesel_async::{pooled_connection::deadpool::Pool, AsyncPgConnection};
+use crate::data_layer::database_connection::pool::Pools;
 
 pub struct AppState {
-    pub pool: Pool<AsyncPgConnection>,
+    pub pools: Pools,
 }
