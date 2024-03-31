@@ -15,10 +15,9 @@ paths:
         '200':
           description: ''
           content:
-            text/plain:
+            application/json:
               schema:
-                type: integer
-                minimum: 0
+                $ref: '#/components/schemas/GetLogsCountResponse'
         '400':
           description: ''
           content:

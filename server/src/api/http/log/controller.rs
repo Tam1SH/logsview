@@ -35,7 +35,7 @@ async fn insert_log(state: Data<AppState>, model: Json<LogDto>) -> Result<HttpRe
 	context_path = "/api",
 	tag = "Logs",
 	responses(
-		(status = 200, body = usize),
+		(status = 200, body = GetLogsCountResponse),
 		(status = 400, body = ApiError),
 		(status = 500, body = ApiError)
 	)

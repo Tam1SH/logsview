@@ -16,11 +16,14 @@
 import * as runtime from '../runtime';
 import type {
   ApiError,
+  GetLogsCountResponse,
   LogDto,
 } from '../models/index';
 import {
     ApiErrorFromJSON,
     ApiErrorToJSON,
+    GetLogsCountResponseFromJSON,
+    GetLogsCountResponseToJSON,
     LogDtoFromJSON,
     LogDtoToJSON,
 } from '../models/index';
@@ -36,7 +39,7 @@ export class LogsApi extends runtime.BaseAPI {
 
     /**
      */
-    async getLogsCountRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<number>> {
+    async getLogsCountRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetLogsCountResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -48,16 +51,12 @@ export class LogsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<number>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetLogsCountResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async getLogsCount(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<number> {
+    async getLogsCount(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetLogsCountResponse> {
         const response = await this.getLogsCountRaw(initOverrides);
         return await response.value();
     }

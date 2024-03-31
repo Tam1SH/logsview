@@ -1,4 +1,4 @@
-import { BaseAPI, Configuration, HTTPHeaders } from './runtime'
+import { BaseAPI, Configuration, type HTTPHeaders } from './api/runtime'
 
 export type ApiFactoryConstructorParams = { 
 	accessToken? : string | Promise<string> | ((name?: string | undefined, scopes?: string[] | undefined) => string | Promise<string>) | undefined,

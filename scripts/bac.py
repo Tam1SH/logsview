@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 # bac - build api client
 from ApiGenerator import ApiGenerator
-from colorama import init, Fore
 import os
-
-init()
 
 
 def Main():
@@ -13,8 +10,6 @@ def Main():
 
 	generator = ApiGenerator(parent_dir)
 	generator.generate_api()
-
-	print(Fore.GREEN + "successful build")
 
 if __name__ == '__main__':
 	Main()

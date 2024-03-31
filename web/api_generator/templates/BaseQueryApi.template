@@ -1,6 +1,10 @@
 /* eslint-disable */
 /* tslint:disable */
 
+import { type UseQueryOptions, useQuery, useQueryClient, type UseQueryReturnType   } from #importPath
+import type { ApiFactory } from './ApiFactory';
+import { ResponseError, type ApiError } from './api';
+
 type _ReturnType<T extends Function> = T extends (...args: any) => infer R ? R : any
 
 type RemoveLast<T extends any[]> = 
@@ -22,14 +26,14 @@ type ParametersWithoutLast<F extends Function> =
 		: never
 
 export type ApiUseQueryOptions<TResult> =
-	Omit<UseBaseQueryOptions<TResult, Error, TResult, unknown[]>, 'queryKey' | 'queryFn'>
+	Omit<UseQueryOptions<TResult, Error, TResult, unknown[]>, 'queryKey' | 'queryFn'>
 
 export default class BaseQueryApi<
 	TResult,
 	TQueryHooksAPIBuilderOptions = ApiUseQueryOptions<TResult>
 > {
 
-	private options: Partial<TQueryHooksAPIBuilderOptions> & {
+	protected options: Partial<TQueryHooksAPIBuilderOptions> & {
 		apiFactory: ApiFactory
 	}
 
@@ -44,7 +48,10 @@ export default class BaseQueryApi<
 		options? : {
 			formatName? : string
 		}
-	) {
+	): {
+		query: UseQueryReturnType<Awaited<_ReturnType<TFunction>>, ApiError>;
+		remove: () => void;
+	} {
 
 		const client = factory.call(this.options.apiFactory)
 

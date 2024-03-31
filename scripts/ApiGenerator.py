@@ -33,6 +33,8 @@ class ApiGenerator:
         self.run_commands_in_directory(directory, commands)
         
         os.chdir(os.path.join(self.root, "server"))
-        os.system(f"openapi-generator-cli generate -i schema/openapi.yaml -g typescript-fetch -o ../web/src/dist/ts/api --additional-properties=useSingleRequestParameter=false,stringEnums=true,supportsES6=true")
-        os.system(f"openapi-generator-cli generate -i schema/openapi.yaml -g typescript-fetch -o ../web/api_generator/templates/api --additional-properties=useSingleRequestParameter=false,stringEnums=true,supportsES6=true")
-        
+        os.system(f"openapi-generator-cli generate -i schema/openapi.yaml -g typescript-fetch -o ../web/api_generator/dist/api --additional-properties=useSingleRequestParameter=false,stringEnums=true,supportsES6=true")
+
+        os.chdir(os.path.join(self.root, "web/api_generator"))
+
+        os.system("bun index.ts")
