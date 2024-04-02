@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use anyhow::Result;
 use chrono::Utc;
 use diesel::{insert_into, QueryDsl};
@@ -6,6 +8,7 @@ use sqlx::postgres::PgListener;
 use uuid::Uuid;
 
 use crate::data_layer::database_connection::pool::Pools;
+use crate::data_layer::repositories::logs::{LogsRepository, LogsRepositoryProvider};
 use crate::{
     data_layer::model::{dto::log::LogDto, log::Log},
     schema::logs::dsl::logs,
@@ -15,19 +18,22 @@ use crate::{
 pub trait LoggerServiceProvider {
     async fn insert_log(&self, log: LogDto) -> Result<()>;
 
-	async fn get_logs_count(&self) -> Result<usize>;
+	async fn get_logs_count(&self) -> Result<i64>;
 
     async fn get_logs_stream() -> Result<PgListener>;
+
+	async fn get_logs_by_range(&self, range: Range<i64>) -> Result<Vec<Log>>;
+
 }
 
 pub struct LoggerService<'a> {
-    pools: &'a Pools,
+	rep: LogsRepository<'a>,
     request_id: Uuid,
 }
 
 impl<'a> LoggerService<'a> {
     pub fn new(pools: &'a Pools, request_id: Uuid) -> Self {
-        Self { pools, request_id }
+        Self { rep: LogsRepository::new(pools), request_id }
     }
 }
 
@@ -35,15 +41,15 @@ impl<'a> LoggerService<'a> {
 
 impl LoggerServiceProvider for LoggerService<'_> {
 
-	async fn get_logs_count(&self) -> Result<usize> {
-		
-        let conn = &mut self.pools.diesel.get().await?;
-
-		let count = logs.count().execute(conn).await?;
-
-		Ok(count)
-
+	async fn get_logs_by_range(&self, range: Range<i64>) -> Result<Vec<Log>> {
+		self.rep.get_logs_by_range(range).await
 	}
+
+	async fn get_logs_count(&self) -> Result<i64> {
+		self.rep.get_logs_count().await
+	}
+
+	//TODO: im too lazy to replace this code to repository
 
     async fn get_logs_stream() -> Result<PgListener> {
         let mut listener = PgListener::connect(dotenv!("DATABASE_URL")).await?;
@@ -52,8 +58,7 @@ impl LoggerServiceProvider for LoggerService<'_> {
     }
 
     async fn insert_log(&self, log: LogDto) -> Result<()> {
-        let conn = &mut self.pools.diesel.get().await?;
-
+		
         let LogDto {
             additional_data,
             controller_name,
@@ -75,7 +80,7 @@ impl LoggerServiceProvider for LoggerService<'_> {
             title,
         };
 
-        insert_into(logs).values(&log).execute(conn).await?;
+		self.rep.insert_log(log).await?;
 
         Ok(())
     }

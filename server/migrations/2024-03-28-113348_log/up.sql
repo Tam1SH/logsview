@@ -1,9 +1,9 @@
 -- Your SQL goes here
-CREATE TYPE LogLevel AS ENUM ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL');
+CREATE TYPE loglevel AS ENUM ('debug', 'info', 'warning', 'error', 'critical');
 
 CREATE TABLE IF NOT EXISTS logs (
     time TIMESTAMPTZ PRIMARY KEY,
-    level LogLevel NOT NULL,
+    level loglevel NOT NULL,
     request_id UUID NOT NULL,
     title TEXT NOT NULL,
     service_name TEXT,
@@ -30,7 +30,7 @@ FOR EACH ROW EXECUTE PROCEDURE logs_trigger();
 -- LANGUAGE plpgsql
 -- AS $$
 -- DECLARE
---     log_levels TEXT[] := ARRAY['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'];
+--     log_levels TEXT[] := ARRAY['debug', 'info', 'warning', 'error', 'critical'];
 --     services TEXT[] := ARRAY['Service1', 'Service2', 'Service3'];
 --     controllers TEXT[] := ARRAY['Controller1', 'Controller2', 'Controller3'];
 --     i INTEGER;

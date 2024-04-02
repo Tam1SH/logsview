@@ -15,36 +15,38 @@
 				</div>
 			</div>
 		</template>
-			<div class="flex flex-col">
-				<span>Message: {{ log.message }}</span>
-				<span>Data: {{ log.additional_data }}</span>
-			</div>
+		
+		<div class="flex flex-col">
+			<span>title: {{ log.title }}</span>
+			<span>Message: {{ log.message }}</span>
+			<span>Data: {{ log.additionalData }}</span>
+		</div>
 	</el-popover>
 
 </template>
 
 <script setup lang="ts">
-import Log from './Log'
+import type { Log } from '@/Api/api';
 import moment from 'moment'
 
 const { log } = defineProps({ 
 	log: {
-		type: Log,
+		type: Object as () => Log,
 		required: true
 	}
 })
 
-const getLogLevelColor = (logLevel: "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL") => {
+const getLogLevelColor = (logLevel: "debug" | "info" | "warning" | "error" | "critical") => {
   switch (logLevel) {
-    case "DEBUG":
+    case "debug":
       return "text-green-500"
-    case "INFO":
+    case "info":
       return "text-blue-500"
-    case "WARNING":
+    case "warning":
       return "text-orange-500"
-    case "ERROR":
+    case "error":
       return "text-red-500"
-    case "CRITICAL":
+    case "critical":
       return "text-violet-500"
     default:
       return "text-white"

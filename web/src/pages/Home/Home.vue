@@ -8,13 +8,24 @@
 
 					</div>
 				</section>
-				
+				<section class="flex">
+					<div class="ml-auto mr-2 gap-1 flex justify-center">
+						<div class="m-auto">
+							<Refresh 
+								@click="logsStore.reload()"
+								class="h-6 w-4 text-neutral-500 cursor-pointer "
+								:class="{ 'animate-spin': logsStore.isLoading }"
+							/>
+						</div>
+						<span class="text-neutral-500">|</span>
+						<span class="ml-auto mr-2 text-neutral-500">{{ logsStore.logs.length }} of {{ logsStore.logsCount?.count ?? 0 }}</span>
+					</div>	
+				</section>
 				<div class="scroll">
 					<el-tree-v2
-						:data="logs"
-						:height="800"
+						ref="treeRef"
+						:height="treeHeight"
 						:width="700"
-						:filter-method="(value, data) => { console.log(value, data); return true }"
 					>
 					<template #default="{ node }">
 						<LogView :log="node.data" />
@@ -25,7 +36,10 @@
 			</div>
 
 			<aside class="aside w-1/3 flex bg-neutral-800 border border-t-0 border-neutral-700">
-
+				<el-button
+					@click="() => logsStore.fetchLogs()"
+				>
+				</el-button>
 			</aside>
 		</div>
 
@@ -35,42 +49,41 @@
 
 
 <script setup lang="ts">
-
 import { v4 as uuidv4 } from 'uuid'
-import { nextTick, ref } from 'vue'
-import Log, { logEntrySchema, type LogEntry } from './components/Log'
-import LogView from './components/LogView.vue';
+import { ref, onMounted, onUnmounted, type Ref, onUpdated } from 'vue'
+import LogView from './components/LogView.vue'
+import { type Log } from '@/Api/api'
+import { useLogsStore } from './LogsStore'
+import type { ElTreeV2 } from 'element-plus'
 
-const randomUuid = uuidv4()
 
-const gen_logs = () => {
+const logsStore = useLogsStore()
 
-	return new Array(200).fill(null).map((_, i) => {
-		return new Log(
-			new Date(Date.now() + i * 10),
-			'CRITICAL',
-			'none',
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vel pharetra vel turpis nunc eget lorem dolor. Sollicitudin aliquam ultrices sagittis orci a. Lacus suspendisse faucibus interdum posuere lorem ipsum. Velit aliquet sagittis id consectetur purus ut. Pellentesque eu tincidunt tortor aliquam nulla facilisi cras fermentum odio. A diam maecenas sed enim ut sem viverra aliquet. ',
-			'SomeService',
-			'SomeController',
-			{},
-			{}
-		)
-	})
+const treeRef = ref<InstanceType<typeof ElTreeV2>>()
+
+logsStore.setRef(treeRef as Ref<InstanceType<typeof ElTreeV2>>)
+
+logsStore.setCountBatch(() => 10)
+logsStore.fetchLogs()
+
+
+let treeHeight = ref(window.innerHeight - 150)
+
+const updateHeight = () => {
+    treeHeight.value = window.innerHeight - 150
 }
 
-const logs = ref(gen_logs() as LogEntry[])
 
-let socket = new WebSocket(`ws://localhost:3769/api/listenLogs/${randomUuid}`)
+onUpdated(() => {
+	console.log(logsStore.logsCount)
+})
+onMounted(async () => {
+    window.addEventListener('resize', updateHeight);
+})
 
-socket.onmessage =  (event) => {
-	const log = logEntrySchema.parse(
-		JSON.parse(event.data)
-	)
-	logs.value = [Log.fromJSON(log), ...logs.value]
-	// logs.value.push(Log.fromJSON(log))
-	
-}
+onUnmounted(() => {
+    window.removeEventListener('resize', updateHeight);
+})
 
 </script>
 

@@ -5,7 +5,7 @@ use std::io;
 use crate::{api::state::AppState, data_layer::database_connection::pool::setup_pool};
 
 use super::{
-    log::controller::{get_logs_count, insert_log},
+    log::controller::{get_logs_by_range, get_logs_count, insert_log},
     middleware::global_error_handler::ErrorHandlerMiddleware,
     websocket::{
         controller::listen_logs,
@@ -33,6 +33,7 @@ pub async fn config_actix_server() -> Result<actix_web::dev::Server, io::Error> 
                     .service(insert_log)
                     .service(listen_logs)
 					.service(get_logs_count)
+					.service(get_logs_by_range)
             )
     })
     .bind("0.0.0.0:80")?

@@ -4,9 +4,11 @@ use anyhow::Result;
 use utoipa::OpenApi;
 
 use crate::api::http::api_error::ApiError;
-use crate::api::http::log::response_types::GetLogsCountResponse;
+use crate::api::http::log::request_types::*;
+use crate::api::http::log::response_types::*;
 use crate::api::http::log::controller::*;
 use crate::data_layer::model::dto::log::LogDto;
+use crate::data_layer::model::log::Log;
 use crate::data_layer::model::log::Loglevel;
 
 
@@ -15,12 +17,16 @@ pub fn openapi() -> Result<()> {
     #[openapi(
 		paths(
 			insert_log,
-			get_logs_count
+			get_logs_count,
+			get_logs_by_range
 		),
 		components(
 			schemas(
 				GetLogsCountResponse,
+				GetLogsByRangeResponse,
+				GetLogsByRangeModel,
 				LogDto,
+				Log,
 				Loglevel,
 				ApiError
 			)

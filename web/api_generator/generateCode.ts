@@ -30,19 +30,7 @@ export function getClasses() {
 			true
 		)
 
-		/**
-		 * The `getClasses` function parses TypeScript files in the './templates/api/apis/' directory, extracting information about 
-		 * classes and their methods.
-		 * 
-		 * `visit` is a recursive function that traverses the TypeScript file's Abstract Syntax Tree (AST). It identifies class 
-		 * declarations and extracts their names and methods.
-		 * 
-		 * For each method, it extracts the method name, its parameters (excluding the last one), and its return type. 
-		 * If the type is not specified, it defaults to 'any'.
-		 * 
-		 * The resulting `classes` array contains objects, each representing a class and its methods.
-		 */
-		function visit(node: ts.Node) {
+		function collectClassesWithMethodsDeclarations(node: ts.Node) {
 			if (ts.isClassDeclaration(node) && node.name) {
 				const className = node.name.text
 				const members = node.members
@@ -73,11 +61,11 @@ export function getClasses() {
 		
 				classes.push({ name: className, members })
 			}
-			ts.forEachChild(node, visit)
+			ts.forEachChild(node, collectClassesWithMethodsDeclarations)
 		}
 
 
-		visit(sourceFile)
+		collectClassesWithMethodsDeclarations(sourceFile)
 	})
 
 	return classes
@@ -195,27 +183,10 @@ export function createQueryApi(classes: ClassDecl[]) {
 				undefined,
 				undefined,
 				[argsParameter],
-				ts.factory.createTypeLiteralNode([
-					ts.factory.createPropertySignature(
-						undefined,
-						"query",
-						undefined,
-						ts.factory.createTypeReferenceNode(
-							"UseQueryReturnType",
-							[member.returnType, ts.factory.createTypeReferenceNode("ApiError")]
-						)
-					),
-					ts.factory.createPropertySignature(
-						undefined,
-						"remove",
-						undefined,
-						ts.factory.createFunctionTypeNode(
-							undefined,
-							[],
-							ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)
-						)
-					)
-				]),
+				ts.factory.createTypeReferenceNode(
+					"UseQueryReturnWrapperType",
+					[member.returnType]
+				),
 				body
 			);
 		})
@@ -270,9 +241,11 @@ export async function generateResultCode() {
     const source = createQueryApi(classes)
     const code = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed }).printFile(source)
     const codeWithImports = `
-import BaseQueryApi, { type ApiUseQueryOptions } from "./BaseQueryApi";
-import { type UseQueryReturnType } from '@tanstack/vue-query'
-import { ${classNames}, type ApiError${typeNames} } from "./api/index";
+/* tslint:disable */
+/* eslint-disable */
+
+import BaseQueryApi, { type ApiUseQueryOptions, type UseQueryReturnWrapperType } from "./BaseQueryApi";
+import { ${classNames}${typeNames} } from "./api/index";
 
 ${code}
     `;
@@ -294,7 +267,7 @@ export async function writeToFile(filePath: string, formattedCode: string) {
 
 export async function runEslint(filePath: string, configPath: string) {
     try {
-        await exec(`bun eslint --config ${configPath} --fix ${filePath}`, { cwd: '/logs'});
+        await exec(`bun eslint --config ${configPath} --fix ${filePath}`, { cwd: '/logs' });
     } catch (error) {
         console.log(error);
     }
@@ -322,13 +295,13 @@ export type Type = 'react' | 'vue';
 
 export async function moveFiles(type: Type) {
     try {
-        await fsExtra.copy('./dist', '../src/dist', { overwrite: true });
-        await fsExtra.copy('./templates/ApiFactory.ts', '../src/dist/ApiFactory.ts', { overwrite: true });
+        await fsExtra.copy('./dist', '../src/Api', { overwrite: true });
+        await fsExtra.copy('./templates/ApiFactory.ts', '../src/Api/ApiFactory.ts', { overwrite: true });
 
 		
         const baseQueryApiContent = await generateBaseQueryApiTemplate(type);
 
-        await fs.promises.writeFile(path.join(__dirname, '../src/dist/BaseQueryApi.ts'), baseQueryApiContent);
+        await fs.promises.writeFile(path.join(__dirname, '../src/Api/BaseQueryApi.ts'), baseQueryApiContent);
 
         console.log('Successfully moved files.');
     } catch (err) {

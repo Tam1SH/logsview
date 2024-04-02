@@ -16,17 +16,27 @@
 import * as runtime from '../runtime';
 import type {
   ApiError,
+  GetLogsByRangeModel,
+  GetLogsByRangeResponse,
   GetLogsCountResponse,
   LogDto,
 } from '../models/index';
 import {
     ApiErrorFromJSON,
     ApiErrorToJSON,
+    GetLogsByRangeModelFromJSON,
+    GetLogsByRangeModelToJSON,
+    GetLogsByRangeResponseFromJSON,
+    GetLogsByRangeResponseToJSON,
     GetLogsCountResponseFromJSON,
     GetLogsCountResponseToJSON,
     LogDtoFromJSON,
     LogDtoToJSON,
 } from '../models/index';
+
+export interface GetLogsByRangeRequest {
+    getLogsByRangeModel: GetLogsByRangeModel;
+}
 
 export interface InsertLogRequest {
     logDto: LogDto;
@@ -36,6 +46,40 @@ export interface InsertLogRequest {
  * 
  */
 export class LogsApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async getLogsByRangeRaw(requestParameters: GetLogsByRangeRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetLogsByRangeResponse>> {
+        if (requestParameters['getLogsByRangeModel'] == null) {
+            throw new runtime.RequiredError(
+                'getLogsByRangeModel',
+                'Required parameter "getLogsByRangeModel" was null or undefined when calling getLogsByRange().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/getLogsByRange`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: GetLogsByRangeModelToJSON(requestParameters['getLogsByRangeModel']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetLogsByRangeResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getLogsByRange(getLogsByRangeModel: GetLogsByRangeModel, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetLogsByRangeResponse> {
+        const response = await this.getLogsByRangeRaw({ getLogsByRangeModel: getLogsByRangeModel }, initOverrides);
+        return await response.value();
+    }
 
     /**
      */

@@ -10,7 +10,8 @@ use crate::{
     domain::logger::{LoggerService, LoggerServiceProvider},
 };
 
-use super::response_types::GetLogsCountResponse;
+use super::request_types::GetLogsByRangeModel;
+use super::response_types::{GetLogsCountResponse, GetLogsByRangeResponse};
 
 #[utoipa::path(
 	context_path = "/api",
@@ -50,3 +51,29 @@ async fn get_logs_count(state: Data<AppState>) -> Result<Json<GetLogsCountRespon
 		GetLogsCountResponse { count }
 	))
 }
+
+
+
+#[utoipa::path(
+	context_path = "/api",
+	tag = "Logs",
+	request_body = GetLogsByRangeModel,
+	responses(
+		(status = 200, body = GetLogsByRangeResponse),
+		(status = 400, body = ApiError),
+		(status = 500, body = ApiError)
+	)
+)]
+#[post("/getLogsByRange")]
+async fn get_logs_by_range(state: Data<AppState>, model: Json<GetLogsByRangeModel>) -> Result<Json<GetLogsByRangeResponse>, ApiError> {
+
+	
+    let service = LoggerService::new(&state.pools, Uuid::new_v4());
+	
+    let logs = service.get_logs_by_range(model.start..model.end).await?;
+
+    Ok(Json(
+		GetLogsByRangeResponse { logs }
+	))
+}
+

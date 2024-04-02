@@ -1,7 +1,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import { type UseQueryOptions, useQuery, useQueryClient, type UseQueryReturnType   } from '@tanstack/vue-query'
+import { type UseQueryOptions, useQuery, useQueryClient, type UseQueryReturnType } from '@tanstack/vue-query'
 import type { ApiFactory } from './ApiFactory';
 import { ResponseError, type ApiError } from './api';
 
@@ -24,6 +24,11 @@ type ParametersWithoutLast<F extends Function> =
 	F extends (...args: any) => infer _ 
 		? Flatten<RemoveLast<Parameters<F>>> 
 		: never
+
+export type UseQueryReturnWrapperType<T> = {
+	query: UseQueryReturnType<T, ApiError>;
+	remove: () => void;
+}
 
 export type ApiUseQueryOptions<TResult> =
 	Omit<UseQueryOptions<TResult, Error, TResult, unknown[]>, 'queryKey' | 'queryFn'>
@@ -48,10 +53,7 @@ export default class BaseQueryApi<
 		options? : {
 			formatName? : string
 		}
-	): {
-		query: UseQueryReturnType<Awaited<_ReturnType<TFunction>>, ApiError>;
-		remove: () => void;
-	} {
+	): UseQueryReturnWrapperType<Awaited<_ReturnType<TFunction>>> {
 
 		const client = factory.call(this.options.apiFactory)
 

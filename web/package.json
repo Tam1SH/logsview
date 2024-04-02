@@ -13,7 +13,9 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@tanstack/vue-query": "^5.28.9",
+    "@tanstack/vue-query-devtools": "^5.28.12",
     "@types/uuid": "^9.0.8",
     "element-plus": "^2.6.3",
     "moment": "^2.30.1",
@@ -23,7 +25,6 @@
     "uuid": "^9.0.1",
     "vee-validate": "^4.12.6",
     "vue": "^3.4.21",
-    "vue-query": "^1.26.0",
     "vue-router": "^4.3.0",
     "webfontloader": "^1.0.0",
     "zod": "^3.22.4"

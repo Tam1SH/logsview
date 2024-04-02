@@ -18,11 +18,11 @@
  * @enum {string}
  */
 export enum Loglevel {
-    Debug = 'DEBUG',
-    Info = 'INFO',
-    Warning = 'WARNING',
-    Error = 'ERROR',
-    Critical = 'CRITICAL'
+    Debug = 'debug',
+    Info = 'info',
+    Warning = 'warning',
+    Error = 'error',
+    Critical = 'critical'
 }
 
 

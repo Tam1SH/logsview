@@ -5,8 +5,12 @@ pub mod data_layer;
 pub mod domain;
 pub mod schema;
 use std::env;
-
+use diesel::{pg::Pg, Connection};
+use diesel_migrations::MigrationHarness;
+use data_layer::database_connection::pool::setup_pool;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 use tokio::join;
+use diesel::PgConnection;
 
 use api::{grpc::server::config_grpc_server, http::{schema::openapi::openapi, server::config_actix_server}};
 
@@ -28,8 +32,21 @@ async fn main() -> std::io::Result<()> {
             .expect("can't start http server")
             .await
     };
+	
+	let _ = run_diesel_migrations();
 
     let _ = join!(http, grpc);
 
+    Ok(())
+}
+
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations/2024-03-28-113348_log");
+
+fn run_diesel_migrations() -> anyhow::Result<()> {
+
+	let conn = &mut PgConnection::establish(dotenv!("DATABASE_URL"))?;
+	let _ = conn.run_pending_migrations(MIGRATIONS);
+	
+	
     Ok(())
 }

@@ -35,6 +35,4 @@ class ApiGenerator:
         os.chdir(os.path.join(self.root, "server"))
         os.system(f"openapi-generator-cli generate -i schema/openapi.yaml -g typescript-fetch -o ../web/api_generator/dist/api --additional-properties=useSingleRequestParameter=false,stringEnums=true,supportsES6=true")
 
-        os.chdir(os.path.join(self.root, "web/api_generator"))
-
-        os.system("bun index.ts")
+        os.system("docker exec -it logs_web /bin/sh -c 'cd ./api_generator && bun index.ts vue'")

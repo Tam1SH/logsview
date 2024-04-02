@@ -6,6 +6,36 @@ info:
     name: ''
   version: 0.1.0
 paths:
+  /api/getLogsByRange:
+    post:
+      tags:
+      - Logs
+      operationId: get_logs_by_range
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLogsByRangeModel'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsByRangeResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
   /api/getLogsCount:
     get:
       tags:
@@ -70,6 +100,27 @@ components:
       properties:
         message:
           type: string
+    GetLogsByRangeModel:
+      type: object
+      required:
+      - start
+      - end
+      properties:
+        end:
+          type: integer
+          format: int64
+        start:
+          type: integer
+          format: int64
+    GetLogsByRangeResponse:
+      type: object
+      required:
+      - logs
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Log'
     GetLogsCountResponse:
       type: object
       required:
@@ -77,7 +128,35 @@ components:
       properties:
         count:
           type: integer
-          minimum: 0
+          format: int64
+    Log:
+      type: object
+      required:
+      - time
+      - level
+      - request_id
+      - title
+      properties:
+        additional_data:
+          nullable: true
+        controller_name:
+          type: string
+          nullable: true
+        level:
+          $ref: '#/components/schemas/Loglevel'
+        message:
+          nullable: true
+        request_id:
+          type: string
+          format: uuid
+        service_name:
+          type: string
+          nullable: true
+        time:
+          type: string
+          format: date-time
+        title:
+          type: string
     LogDto:
       type: object
       required:
@@ -105,8 +184,8 @@ components:
     Loglevel:
       type: string
       enum:
-      - DEBUG
-      - INFO
-      - WARNING
-      - ERROR
-      - CRITICAL
+      - debug
+      - info
+      - warning
+      - error
+      - critical

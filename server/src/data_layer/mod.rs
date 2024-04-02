@@ -5,3 +5,7 @@ pub mod model {
         pub mod log;
     }
 }
+
+pub mod repositories {
+	pub mod logs;
+}

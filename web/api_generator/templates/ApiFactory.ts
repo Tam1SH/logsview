@@ -37,8 +37,9 @@ export class ApiFactory {
 		return new ClientClass(this.config)
 	}
 
+	//TODO: its needed only for SSR
 	static baseUrl() {
-		return process.env.SERVICES ?? '';
+		return '';
 	}
 	
 	private static getFetch() {
