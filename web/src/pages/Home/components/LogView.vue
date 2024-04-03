@@ -1,12 +1,12 @@
 <template>
 
-	<el-popover
+	<!-- <el-popover
 		placement="bottom"
 		title="Title"
 		:width="700"
 		trigger="click"
 	>
-		<template #reference>
+		<template #reference> -->
 			<div class="flex gap-1 w-full h-[26px]">
 				<span :class="getLogLevelColor(log.level)">[{{ log.level }}]</span>
 				<span class="text-cyan-500">[{{ formatDate(log.time) }}]</span>
@@ -14,14 +14,14 @@
 					<span class="text-ellipsis overflow-hidden whitespace-nowrap w-full">{{ log.title }}</span>
 				</div>
 			</div>
-		</template>
+		<!-- </template>
 		
 		<div class="flex flex-col">
 			<span>title: {{ log.title }}</span>
 			<span>Message: {{ log.message }}</span>
 			<span>Data: {{ log.additionalData }}</span>
 		</div>
-	</el-popover>
+	</el-popover> -->
 
 </template>
 

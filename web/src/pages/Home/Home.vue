@@ -18,27 +18,26 @@
 							/>
 						</div>
 						<span class="text-neutral-500">|</span>
-						<span class="ml-auto mr-2 text-neutral-500">{{ logsStore.logs.length }} of {{ logsStore.logsCount?.count ?? 0 }}</span>
+						<span class="ml-auto mr-2 text-neutral-500">{{ logsStore.logs.length }} of {{ logsStore.logsCount ?? 0 }}</span>
 					</div>	
 				</section>
+
 				<div class="scroll">
 					<el-tree-v2
 						ref="treeRef"
 						:height="treeHeight"
 						:width="700"
 					>
-					<template #default="{ node }">
-						<LogView :log="node.data" />
-					</template>
+						<template #default="{ node }">
+							<LogView :log="node.data.log" />
+						</template>
 					</el-tree-v2>
 				</div>
 
 			</div>
 
 			<aside class="aside w-1/3 flex bg-neutral-800 border border-t-0 border-neutral-700">
-				<el-button
-					@click="() => logsStore.fetchLogs()"
-				>
+				<el-button @click="() => logsStore.fetchLogs()">
 				</el-button>
 			</aside>
 		</div>
@@ -63,7 +62,9 @@ const treeRef = ref<InstanceType<typeof ElTreeV2>>()
 
 logsStore.setRef(treeRef as Ref<InstanceType<typeof ElTreeV2>>)
 
-logsStore.setCountBatch(() => 10)
+logsStore.setBatchSizeForFetch(100)
+logsStore.setAppendBatchTimeout(500)
+logsStore.setBatchSizeForSocket(50)
 logsStore.fetchLogs()
 
 
@@ -73,10 +74,6 @@ const updateHeight = () => {
     treeHeight.value = window.innerHeight - 150
 }
 
-
-onUpdated(() => {
-	console.log(logsStore.logsCount)
-})
 onMounted(async () => {
     window.addEventListener('resize', updateHeight);
 })
@@ -90,7 +87,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .scroll {
 	@apply p-4 overflow-auto;
-	height: calc(100vh - 88px);
+	height: calc(100vh - 118px);
 }
 
 .aside {
