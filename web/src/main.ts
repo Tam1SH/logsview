@@ -19,8 +19,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 const pinia = createPinia()
 
-app
-	.use(VueQueryPlugin)
+app.use(VueQueryPlugin)
 	.use(pinia)
 	.use(router)
 	.use(ElementPlus)
