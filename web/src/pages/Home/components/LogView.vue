@@ -36,10 +36,6 @@ onMounted(() => {
 	checkIsLast(log)
 })
 
-
-
-
-//use thirdparty lib with ~62 kb size for only one function? :D
 </script>
 
 
