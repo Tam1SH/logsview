@@ -44,7 +44,7 @@
 				service name:
 			</span>
 			<span>
-				{{ log.serviceName }}
+				{{ log.serviceName ?? 'empty' }}
 			</span>
 		</div>
 		<div class="flex gap-1">
@@ -52,7 +52,7 @@
 				controller name:
 			</span>
 			<span>
-				{{ log.controllerName }}
+				{{ log.controllerName ?? 'empty' }}
 			</span>
 		</div>
 		<div class="flex flex-col gap-1">
@@ -61,10 +61,10 @@
 			</span>
 			<span class="bg-neutral-700 rounded-md p-2">
 				<code 
-					class="language-json !bg-transparent !text-sm !whitespace-break-spaces" 
+					class="language-javascript !bg-transparent !text-sm !whitespace-break-spaces flex-wrap" 
 					style="font-family: system-ui;"
 				>
-					{{ log.message }}
+					{{ JSON.parse(log.message) }}
 				</code>
 			</span>
 		</div>
@@ -74,7 +74,7 @@
 			</span>
 			<span class="bg-neutral-700 rounded-md p-2">
 				<code 
-					class="language-json !bg-transparent !text-sm !whitespace-break-spaces" 
+					class="language-json flex !bg-transparent !text-sm !whitespace-break-spaces" 
 					style="font-family: system-ui;"
 				>
 					{{ log.additionalData }}
@@ -93,11 +93,15 @@
 <script setup lang="ts">
 import type { Log } from '@/Api/api';
 import { formatDate, getLogLevelColor } from '../utils';
-import { onMounted } from 'vue';
+
 import Prism from "prismjs";
 import "prismjs/themes/prism.css"
 import 'prism-themes/themes/prism-cb.css'
 import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-javascript'
+import { onUpdated } from 'vue';
+// import Prism from "prismjs";
+// import 'prismjs/components/prism-json';
 
 const { log: log } = defineProps({
 	log: {
@@ -105,12 +109,11 @@ const { log: log } = defineProps({
 	}
 })
 
-onMounted(() => {
+onUpdated(() => {
 	window.Prism = window.Prism || {}
     window.Prism.manual = true
     Prism.highlightAll()
 })
-
 </script>
 <style lang="scss">
 .token.operator {

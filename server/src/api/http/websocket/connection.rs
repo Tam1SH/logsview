@@ -87,7 +87,6 @@ impl Actor for WsConnection {
     type Context = ws::WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-		println!("start");
         let recipient = ctx.address().recipient();
 		let addr = self.addr.clone();
 		let id = self.id;
@@ -114,7 +113,6 @@ impl Actor for WsConnection {
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
-		println!("end");
         self.addr.do_send(Disconnect(self.id));
         Running::Stop
     }

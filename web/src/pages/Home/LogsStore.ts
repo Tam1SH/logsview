@@ -209,7 +209,8 @@ function useSocketHandler({ unshiftLogs } : SocketHandlerParams) {
     function connect(usage: UseConnectionEnum, countConnectionRetry = 0) {
 
         if (usage === UseConnectionEnum.Connect) {
-            socket = new WebSocket(`ws://localhost:3769/api/listenLogs/${v4()}`)
+			
+            socket = new WebSocket(`ws://localhost${import.meta.env.VITE_BASE_PATH}/api/listenLogs/${v4()}`)
 
             socket.onopen = () => {
                 countConnectionRetry = 0

@@ -1,68 +1,30 @@
-
 version: "3.8"
 name: logsview
 
 services:
   proxy:
-    container_name: logs_proxy
     build:
       context: ./docker-images/proxy
       dockerfile: Dockerfile.Debug
-    restart: unless-stopped
     volumes:
       - ./docker-images/proxy/server.Debug.conf:/etc/nginx/conf.d/default.conf:rw
-    ports:
-      - 3769:80
-    expose:
-      - 80
-    networks:
-      - logs
-
-  web:
-    container_name: logs_web
+      
+  web:    
     build: 
-      dockerfile: ./docker-images/logs/Dockerfile.Debug
-    working_dir: /logs
+      dockerfile: ./docker-images/web/Dockerfile.Debug
+    volumes:
+      - ./web:/logs:rw
+    container_name: logs_web
     restart: unless-stopped
     expose:
       - 5173
-    volumes:
-      - ./web:/logs:rw
     networks:
       - logs
+
   
   server:
-    container_name: logs_server
     build: 
       context: ./server
       dockerfile: ../docker-images/server/Dockerfile.Debug
-    restart: unless-stopped
     volumes:
       - ./server:/server:rw
-    expose:
-      - 80
-      - 2331
-    networks:
-      - logs
-
-  db:
-    image: timescale/timescaledb:latest-pg16
-    container_name: logs_db
-    environment:
-      POSTGRES_DB: default
-    restart: unless-stopped
-    volumes:
-      - storage:/var/lib/postgresql/data
-    networks:
-      - logs
-    expose:
-      - 5432
-
-volumes:
-  storage: {}
-
-networks:
-  logs:
-    driver: bridge
-    ipam:
-      driver: default

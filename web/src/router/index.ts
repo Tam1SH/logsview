@@ -1,10 +1,9 @@
-import App from '@/App.vue'
 import Home from '@/pages/Home/Home.vue'
 import Login from '@/pages/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.VITE_BASE_PATH),
   routes: [
     {
         path: '/',

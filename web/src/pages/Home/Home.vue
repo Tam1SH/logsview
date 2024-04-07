@@ -5,8 +5,6 @@
 
 			<div :style="{ width: `${right - restrictedX}` + 'px' }" class="h-full">
 				<el-tabs
-				
-					:ref="tabsHackRef"
 					type="border-card" 
 					class="w-full !border-0 top-px !bg-neutral-900"
 				>
@@ -153,7 +151,6 @@ import { useSettingsStore } from './SettingsStore'
 
 
 
-
 const currentLog = ref(null as Log | null)
 
 const container = ref()
@@ -176,7 +173,7 @@ const settingsStore = useSettingsStore()
 const logsStore = useLogsStore()
 
 const treeRef = ref<InstanceType<typeof ElTreeV2>>()
-const tabsHackRef = ref()
+	
 
 const throttledCheckIsLast = _.throttle((log: Log) => {
 	if (logsStore.checkIsLast(log)) {
@@ -246,17 +243,17 @@ const updateWidth = () => {
 }
 
 onMounted(() => {
-	console.log(tabsHackRef.value)
     window.addEventListener('resize', updateWidth);
     window.addEventListener('resize', updateHeight);
+	// window.Prism = window.Prism || {}
+    // window.Prism.manual = true
+    // Prism.highlightAll()
 })
 
 onUnmounted(() => {
     window.addEventListener('resize', updateWidth);
     window.removeEventListener('resize', updateHeight);
 })
-
-
 
 </script>
 

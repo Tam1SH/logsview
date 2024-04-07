@@ -1,0 +1,45 @@
+
+version: "3.8"
+name: logsview
+
+services:
+  proxy:
+    container_name: logs_proxy
+    restart: unless-stopped
+    ports:
+      - 3769:80
+    expose:
+      - 80
+    networks:
+      - logs
+
+  server:
+    container_name: logs_server
+    restart: unless-stopped
+    expose:
+      - 80
+      - 2331
+    networks:
+      - logs
+
+  db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: logs_db
+    environment:
+      POSTGRES_DB: default
+    restart: unless-stopped
+    volumes:
+      - storage:/var/lib/postgresql/data
+    networks:
+      - logs
+    expose:
+      - 5432
+
+volumes:
+  storage: {}
+
+networks:
+  logs:
+    driver: bridge
+    ipam:
+      driver: default

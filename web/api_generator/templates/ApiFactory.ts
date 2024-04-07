@@ -39,7 +39,7 @@ export class ApiFactory {
 
 	//TODO: its needed only for SSR
 	static baseUrl() {
-		return '';
+		return import.meta.env.VITE_BASE_PATH;
 	}
 	
 	private static getFetch() {

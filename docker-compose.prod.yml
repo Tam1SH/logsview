@@ -1,0 +1,13 @@
+version: "3.8"
+name: logsview
+
+services:
+  proxy:
+    build:
+      context: ./
+      dockerfile: ./docker-images/proxy/Dockerfile
+
+  server:
+    build: 
+      context: ./server
+      dockerfile: ../docker-images/server/Dockerfile
