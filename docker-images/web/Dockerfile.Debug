@@ -1,3 +1,3 @@
 FROM oven/bun:1.0.33 as base
 
-CMD ["bun", "run", "dev"]
+ENTRYPOINT bun run dev || tail -f /dev/null

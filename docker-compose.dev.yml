@@ -6,12 +6,13 @@ services:
     build:
       context: ./docker-images/proxy
       dockerfile: Dockerfile.Debug
-    volumes:
-      - ./docker-images/proxy/server.Debug.conf:/etc/nginx/conf.d/default.conf:rw
+    # volumes:
+    #   - ./docker-images/proxy/server.Debug.conf:/etc/nginx/conf.d/server.Debug.conf:rw
       
   web:    
     build: 
       dockerfile: ./docker-images/web/Dockerfile.Debug
+    working_dir: /logs
     volumes:
       - ./web:/logs:rw
     container_name: logs_web
