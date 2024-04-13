@@ -4,6 +4,7 @@ name: logsview
 
 services:
   proxy:
+    image: logs_proxy
     container_name: logs_proxy
     restart: unless-stopped
     ports:
@@ -14,6 +15,7 @@ services:
       - logs
 
   server:
+    image: logs_server
     container_name: logs_server
     restart: unless-stopped
     expose:
@@ -23,8 +25,10 @@ services:
       - logs
 
   db:
-    image: timescale/timescaledb:latest-pg16
+    image: logs_db
     container_name: logs_db
+    build: 
+      dockerfile: ./docker-images/db/Dockerfile
     environment:
       POSTGRES_DB: default
     restart: unless-stopped

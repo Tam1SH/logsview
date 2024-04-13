@@ -64,7 +64,7 @@
 					class="language-javascript !bg-transparent !text-sm !whitespace-break-spaces flex-wrap" 
 					style="font-family: system-ui;"
 				>
-					{{ JSON.parse(log.message) }}
+					{{ tryParseJson(log.message) }}
 				</code>
 			</span>
 		</div>
@@ -77,7 +77,7 @@
 					class="language-json flex !bg-transparent !text-sm !whitespace-break-spaces" 
 					style="font-family: system-ui;"
 				>
-					{{ log.additionalData }}
+					{{ tryParseJson(log.additionalData) }}
 				</code>
 			</span>
 		</div>
@@ -108,6 +108,16 @@ const { log: log } = defineProps({
 		type: Object as () => Log | null
 	}
 })
+
+
+const tryParseJson = (json: any) => {
+	try {
+		return JSON.parse(json)
+	}
+	catch {
+		return '{}'
+	}
+}
 
 onUpdated(() => {
 	window.Prism = window.Prism || {}
